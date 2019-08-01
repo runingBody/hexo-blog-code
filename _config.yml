@@ -58,9 +58,9 @@ default_category: uncategorized
 category_map:
 tag_map:
 
-# Date / Time format
+# Date / Time formatK
 ## Hexo uses Moment.js to parse and display date
-## You can customize the date format as defined in
+## You can customize the date format as defined inK
 ## http://momentjs.com/docs/#/displaying/format/
 date_format: YYYY-MM-DD
 time_format: HH:mm:ss

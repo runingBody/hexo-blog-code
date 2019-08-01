@@ -1,0 +1,456 @@
+<!DOCTYPE html>
+<html class="full-height">
+<head><meta name="generator" content="Hexo 3.8.0">
+  <meta charset="utf-8">
+  <link rel="stylesheet" href="//cdn.bootcss.com/bulma/0.4.1/css/bulma.min.css">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+  <script src="//cdn.bootcss.com/jquery/3.2.1/jquery.min.js"></script>
+  
+  <title>Dockerfile入门到实例的详细讲解 | LiuRun&#39;s Blog</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="一、Docker简介 1.1 什么是容器  一种虚拟化的方法 操作系统级别的虚拟化 只能运行相同的或相似的内核的操作系统 依赖于Linuxb内核特性：Namespace和Cgroups(控制组) 1.2 什么是Docker docker是一个把开发的应用程序自动部署到容器的开源引擎。docker在虚拟化的容器处理环境中增加了一个应用程序部署引擎，该引擎的目标是提供一个轻量、快速的环境，能够运行开发">
+<meta name="keywords" content="前端,架构">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Dockerfile入门到实例的详细讲解">
+<meta property="og:url" content="http://yoursite.com/2019/07/27/Dockerfile入门到实例的详细讲解/index.html">
+<meta property="og:site_name" content="LiuRun&#39;s Blog">
+<meta property="og:description" content="一、Docker简介 1.1 什么是容器  一种虚拟化的方法 操作系统级别的虚拟化 只能运行相同的或相似的内核的操作系统 依赖于Linuxb内核特性：Namespace和Cgroups(控制组) 1.2 什么是Docker docker是一个把开发的应用程序自动部署到容器的开源引擎。docker在虚拟化的容器处理环境中增加了一个应用程序部署引擎，该引擎的目标是提供一个轻量、快速的环境，能够运行开发">
+<meta property="og:locale" content="default">
+<meta property="og:updated_time" content="2019-07-29T16:53:27.659Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Dockerfile入门到实例的详细讲解">
+<meta name="twitter:description" content="一、Docker简介 1.1 什么是容器  一种虚拟化的方法 操作系统级别的虚拟化 只能运行相同的或相似的内核的操作系统 依赖于Linuxb内核特性：Namespace和Cgroups(控制组) 1.2 什么是Docker docker是一个把开发的应用程序自动部署到容器的开源引擎。docker在虚拟化的容器处理环境中增加了一个应用程序部署引擎，该引擎的目标是提供一个轻量、快速的环境，能够运行开发">
+  
+    <link rel="alternate" href="/atom.xml" title="LiuRun&#39;s Blog" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+  
+    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  
+  <link rel="stylesheet" href="/css/common.css">
+<link rel="stylesheet" href="/css/nav.css">
+<link rel="stylesheet" href="/css/layout.css">
+  
+
+</head>
+</html>
+<body>
+  <header id="navbar" class="overflow-hidden">
+  <div class="container">
+    <nav class="nav">
+         <div class="nav-left">
+            <a href="/" class="nav-item" style="font-size: 20px;">
+              <span class="logo">Liu Run</span>'s Blog
+            </a>
+         </div>
+        <div class="nav-center is-hidden position-relative" id="search_container">
+            <div class="nav-item full-width full-height">
+                <i class="fa fa-search has-padding" aria-hidden="true"></i>
+                <input type="text" id="search_input" class="search-input full-height full-width" placeholder="Search post" autofocus>
+                <i id="close_search" class="fa fa-times" aria-hidden="true"></i>
+            </div>
+            <div id="search_result"></div>
+        </div>
+        <div class="nav-right nav-menu">
+            <a class="nav-item" id="search">
+                <i class="fa fa-search" aria-hidden="true"></i>
+            </a>
+            
+            <a class="nav-item" href="/">
+                主页
+            </a>
+            
+            <a class="nav-item" href="/works">
+                随笔
+            </a>
+            
+            <a class="nav-item" href="/about">
+                专栏
+            </a>
+            
+        </div>
+        <span class="nav-toggle" id="navMenuDropdown">
+            <span></span>
+            <span></span>
+            <span></span>
+        </span>
+        <div class="navbar-menu position-absolute full-width content-box is-hidden-desktop is-flex flex-column center" style="top: 100%;">
+            
+            <a class="nav-item flex-1" href="/">
+                主页
+            </a>
+            
+            <a class="nav-item flex-1" href="/works">
+                随笔
+            </a>
+            
+            <a class="nav-item flex-1" href="/about">
+                专栏
+            </a>
+            
+        </div>
+    </nav>
+  </div>
+</header>
+
+  <div id="main-wrap" class="position-relative" style="margin-top: 55px;">
+      <div class="main-inner-content">
+          <!--博文页面-->
+
+<style>
+    .header-box {
+        height: 370px;
+        filter: blur(10px);
+        background-size: cover;
+        background-color: lightsteelblue;
+    }
+
+    .post-box {
+        padding: 15px;
+        padding-top: 60px;
+        min-height: 80vh;
+        margin-top: -200px;
+        border-radius: 4px;
+        background-color: rgba(255,255,255,.8);
+    }
+
+    .post-avatar {
+        height: 30px;
+        width: 30px;
+        border-radius: 50%;
+    }
+
+    .flow-chart {
+        text-align: center;
+    }
+
+    img[alt="post-cover"] {
+        display: none;
+    }
+    .container .content .highlight {
+        overflow-x: scroll;
+    }
+</style>
+<header>
+    <div id="header_box" class="header-box"></div>
+</header>
+<section>
+    <div class="container post-box">
+        <div class="content post-title is-flex center flex-column" style="margin-bottom: 70px; overflow: auto;">
+            <h1 class="has-text-centered" style="padding-bottom: 10px; border-bottom: 3px solid #fff">
+                <strong>Dockerfile入门到实例的详细讲解</strong>
+            </h1>
+            
+            <div class="is-flex align-center">
+                <img class="post-avatar" src="/images/use_img.jpg">
+                <span style="padding:0 10px;"> <span class="sub-title">By</span> LiuRun</span>
+                <span class="post-date sub-title">at: 2019-07-27</span>
+            </div>
+            
+                <div>
+                    
+                         <a class="tag is-post-tag" href="/tags/前端/">前端</a>
+                    
+                         <a class="tag is-post-tag" href="/tags/架构/">架构</a>
+                    
+                </div>
+            
+        </div>
+        <div class="content" style="overflow: auto">
+            <p>一、Docker简介</p>
+<pre><code>1.1 什么是容器
+</code></pre><ul>
+<li>一种虚拟化的方法</li>
+<li>操作系统级别的虚拟化</li>
+<li>只能运行相同的或相似的内核的操作系统</li>
+<li><p>依赖于Linuxb内核特性：Namespace和Cgroups(控制组)</p>
+<p>1.2 什么是Docker</p>
+<p>docker是一个把开发的应用程序自动部署到容器的开源引擎。docker在虚拟化的容器处理环境中增加了一个应用程序部署引擎，该引擎的目标是提供一个轻量、快速的环境，能够运行开发者的程序，并方便高效的将程序从开发者环境部署到测试环境然后在部署到生产环境。</p>
+<p>Docker的目标：（高内聚、低耦合、单一任务）</p>
+</li>
+<li><p>提供简单轻量的建模方式</p>
+</li>
+<li>职责的逻辑分离，开发、运维</li>
+<li>快速高效的开发生命周期，编码、编译、测试、打包、部署、监控</li>
+<li><p>鼓励使用面向服务的架构</p>
+<p>1.3 Docker的使用场景</p>
+</li>
+<li><p>使用Docker容器开发、测试、部署服务</p>
+</li>
+<li>创建隔离的运行环境</li>
+<li>搭建测试环境</li>
+<li>构建多用户的平台即服务基础设施（Pass）</li>
+<li>提供软件即服务的应用程序（sass）</li>
+<li><p>高性能、超大规模的宿主机部署</p>
+<p>1.4 Docker跟容器的关系</p>
+<p>由于容器技术的复杂性，它依赖于Linux内核的特性，而且不易安装和不易管理和实现自动化，docker的出现正是为了解决这些问题。</p>
+</li>
+</ul>
+<p>二、Docker的基本组成</p>
+<ul>
+<li>Docker Client 客户端</li>
+<li>Docker Daemon 守护进程</li>
+<li>Docker Image 镜像</li>
+<li>Docker Container 容器</li>
+<li><p>Docker Register 仓库</p>
+<p>PS：在线练习docker常用命令，包含search、pull、push、run、inspect、history…等</p>
+<p><a href="https://www.docker.com/tryit/" target="_blank" rel="noopener">Docker在线演示地址：</a>    </p>
+</li>
+</ul>
+<p>三、Docker容器相关技术简介</p>
+<pre><code>Docker依赖的Linux内核特性
+</code></pre><ul>
+<li>Namespaces 命名空间</li>
+<li><p>Control groups（Cgroups） 控制组</p>
+<p>系统资源环境的隔离或者资源限制，网络、进程、文件</p>
+<p>Docker容器的能力：</p>
+</li>
+<li><p>文件系统的隔离：每个容器都有自己的Root文件系统</p>
+</li>
+<li>进程隔离： 每个容器都运行在自己的进程环境中</li>
+<li>网络隔离： 容器间的虚拟网络接口和Ip地址都是分开的</li>
+<li>资源隔离和分组： 使用cgroups将CPU和内存之类的资源独立分配给每个Docker容器</li>
+</ul>
+<p>四、DockerFile文件的编写、理解</p>
+<pre><code>4.1 常用命令
+
+1. 启动容器：
+
+    <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">docker run image [command] [arg]</span><br><span class="line">image: 指定容器启动时操作的镜像</span><br><span class="line">command: 容器启动时执行的命令</span><br><span class="line">arg: 命令参数</span><br></pre></td></tr></table></figure>
+
+2. 启动交互式容器
+
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">docker run -i -t image /bin/bash</span><br><span class="line">-i: --interactive=true | false 默认 false (为容器始终打开标准输入)</span><br><span class="line">-t: --tty=true | false 默认false（为创建的容器提供终端，可进入交互模式）</span><br></pre></td></tr></table></figure>
+
+3. 查看容器
+
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">docker ps</span><br><span class="line">-a: 查看所有容器，包含未运行的容器</span><br><span class="line">-l: 列表模式</span><br></pre></td></tr></table></figure>
+
+4. 查看容器参数、详情
+
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker inspect imageId| imageName</span><br></pre></td></tr></table></figure>
+
+5. 容器重命名(可在运行阶段直接重命名)
+
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker run --name= container01 -t -i ubantu /bin/bash</span><br></pre></td></tr></table></figure>
+
+6. 重新启动停止的容器：
+
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker start -i container01</span><br></pre></td></tr></table></figure>
+
+7. 删除容器（停止状态）：
+
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker rm container</span><br></pre></td></tr></table></figure>
+
+8. 删除镜像：
+
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker rmi image</span><br></pre></td></tr></table></figure>
+
+9. 查看容器日志(查看容器内部运行情况)
+
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">docker logs -f -t --tail container</span><br><span class="line">-f: --follows=true | false 默认为false 一直跟踪返回日志</span><br><span class="line">-t: --timestamps=true | false 默认为false 时间戳</span><br><span class="line">--tail= &quot;all&quot; 返回日志范围</span><br></pre></td></tr></table></figure>
+</code></pre><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"></span><br></pre></td></tr></table></figure>
+<pre><code>4.2 守护式容器
+
+启动守护式容器：docker run --name dc1 ubuntu -d /bin/bash -C &quot;
+
+4.3 Dockerfile配置文件的编写
+
+4.3.1 基本结构
+
+Dockerfile 由一行行命令语句组成，并且支持以 # 开头的注释行。
+
+一般的，Dockerfile 分为四部分：基础镜像信息、维护者信息、镜像操作指令和容器启动时执行指令。
+
+例如：
+
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"># This dockerfile uses the ubuntu image</span><br><span class="line"># VERSION 2 - EDITION 1</span><br><span class="line"># Author: docker_user</span><br><span class="line"># Command format: Instruction [arguments / command] ..</span><br><span class="line"></span><br><span class="line"># Base image to use, this must be set as the first line</span><br><span class="line">FROM ubuntu</span><br><span class="line"></span><br><span class="line"># Maintainer: docker_user &lt;docker_user at email.com&gt; (@docker_user)</span><br><span class="line">MAINTAINER docker_user docker_user@email.com</span><br><span class="line"></span><br><span class="line"># Commands to update the image</span><br><span class="line">RUN echo &quot;deb http://archive.ubuntu.com/ubuntu/ raring main universe&quot; &gt;&gt; /etc/apt/sources.list</span><br><span class="line">RUN apt-get update &amp;&amp; apt-get install -y nginx</span><br><span class="line">RUN echo &quot;\ndaemon off;&quot; &gt;&gt; /etc/nginx/nginx.conf</span><br><span class="line"></span><br><span class="line"># Commands when creating a new container</span><br><span class="line">CMD /usr/sbin/nginx</span><br></pre></td></tr></table></figure>
+</code></pre><p>其中，一开始必须指明所基于的镜像名称，接下来推荐说明维护者信息。</p>
+<p>后面则是镜像操作指令，例如 RUN 指令，RUN 指令将对镜像执行跟随的命令。每运行一条 RUN 指令，镜像添加新的一层，并提交。</p>
+<p>最后是 CMD 指令，来指定运行容器时的操作命令。</p>
+<p>下面是一个更复杂的例子:</p>
+<pre><code><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br></pre></td><td class="code"><pre><span class="line"># Nginx</span><br><span class="line">#</span><br><span class="line"># VERSION               0.0.1</span><br><span class="line"></span><br><span class="line">FROM      ubuntu</span><br><span class="line">MAINTAINER Victor Vieux &lt;victor@docker.com&gt;</span><br><span class="line"></span><br><span class="line">RUN apt-get update &amp;&amp; apt-get install -y inotify-tools nginx apache2 openssh-server</span><br><span class="line"></span><br><span class="line"># Firefox over VNC</span><br><span class="line">#</span><br><span class="line"># VERSION               0.3</span><br><span class="line"></span><br><span class="line">FROM ubuntu</span><br><span class="line"></span><br><span class="line"># Install vnc, xvfb in order to create a &apos;fake&apos; display and firefox</span><br><span class="line">RUN apt-get update &amp;&amp; apt-get install -y x11vnc xvfb firefox</span><br><span class="line">RUN mkdir /.vnc</span><br><span class="line"># Setup a password</span><br><span class="line">RUN x11vnc -storepasswd 1234 ~/.vnc/passwd</span><br><span class="line"># Autostart firefox (might not be the best way, but it does the trick)</span><br><span class="line">RUN bash -c &apos;echo &quot;firefox&quot; &gt;&gt; /.bashrc&apos;</span><br><span class="line"></span><br><span class="line">EXPOSE 5900</span><br><span class="line">CMD    [&quot;x11vnc&quot;, &quot;-forever&quot;, &quot;-usepw&quot;, &quot;-create&quot;]</span><br><span class="line"></span><br><span class="line"># Multiple images example</span><br><span class="line">#</span><br><span class="line"># VERSION               0.1</span><br><span class="line"></span><br><span class="line">FROM ubuntu</span><br><span class="line">RUN echo foo &gt; bar</span><br><span class="line"># Will output something like ===&gt; 907ad6c2736f</span><br><span class="line"></span><br><span class="line">FROM ubuntu</span><br><span class="line">RUN echo moo &gt; oink</span><br><span class="line"># Will output something like ===&gt; 695d7793cbe4</span><br><span class="line"></span><br><span class="line"># You᾿ll now have two images, 907ad6c2736f with /bar, and 695d7793cbe4 with</span><br><span class="line"># /oink.</span><br></pre></td></tr></table></figure>
+
+4.3.2 指令
+
+指令的一般格式为 INSTRUCTION arguments，指令包括 FROM、MAINTAINER、RUN 等。
+
+FROM
+
+格式为 FROM &lt;image&gt;或FROM &lt;image&gt;:&lt;tag&gt;。
+</code></pre><p>第一条指令必须为 FROM 指令。并且，如果在同一个Dockerfile中创建多个镜像时，可以使用多个 FROM 指令（每个镜像一次）。</p>
+<pre><code>MAINTANER
+
+格式为 MAINTAINER &lt;name&gt;，指定维护者信息。
+
+RUN
+
+格式为 RUN &lt;command&gt; 或 RUN [&quot;executable&quot;, &quot;param1&quot;, &quot;param2&quot;]。
+</code></pre><p>前者将在 shell 终端中运行命令，即 /bin/sh -c；后者则使用 exec 执行。指定使用其它终端可以通过第二种方式实现，例如 RUN [“/bin/bash”, “-c”, “echo hello”]。</p>
+<p>每条 RUN 指令将在当前镜像基础上执行指定命令，并提交为新的镜像。当命令较长时可以使用 \ 来换行。</p>
+<pre><code>CMD
+
+支持三种格式:
+</code></pre><ul>
+<li>CMD [“executable”,”param1”,”param2”] 使用 exec 执行，推荐方式；</li>
+<li>CMD command param1 param2 在 /bin/sh 中执行，提供给需要交互的应用；</li>
+<li><p>CMD [“param1”,”param2”] 提供给 ENTRYPOINT 的默认参数；</p>
+<p>指定启动容器时执行的命令，每个 Dockerfile 只能有一条 CMD 命令。如果指定了多条命令，只有最后一条会被执行。</p>
+</li>
+</ul>
+<p>如果用户启动容器时候指定了运行的命令，则会覆盖掉 CMD 指定的命令。</p>
+<pre><code>EXPOSE 
+
+格式为 EXPOSE &lt;port&gt; [&lt;port&gt;...]。
+</code></pre><p>告诉 Docker 服务端容器暴露的端口号，供互联系统使用。在启动容器时需要通过 -P，Docker 主机会自动分配一个端口转发到指定的端口。</p>
+<pre><code>ENV
+
+格式为 ENV &lt;key&gt; &lt;value&gt;。 指定一个环境变量，会被后续 RUN 指令使用，并在容器运行时保持。
+
+例如:
+
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">ENV PG_MAJOR 9.3</span><br><span class="line">ENV PG_VERSION 9.3.4</span><br><span class="line">RUN curl -SL http://example.com/postgres-$PG_VERSION.tar.xz | tar -xJC /usr/src/postgress &amp;&amp; …</span><br><span class="line">ENV PATH /usr/local/postgres-$PG_MAJOR/bin:$PATH</span><br></pre></td></tr></table></figure>
+
+ADD 
+
+格式为 ADD &lt;src&gt; &lt;dest&gt;。
+</code></pre><p>该命令将复制指定的 <src> 到容器中的 <dest>。 其中 <src> 可以是Dockerfile所在目录的一个相对路径；也可以是一个 URL；还可以是一个 tar 文件（自动解压为目录）。</src></dest></src></p>
+<pre><code>COPY 
+
+格式为 COPY &lt;src&gt; &lt;dest&gt;。
+</code></pre><p>复制本地主机的 <src>（为 Dockerfile 所在目录的相对路径）到容器中的 <dest>。</dest></src></p>
+<p>当使用本地目录为源目录时，推荐使用 COPY</p>
+<pre><code>ENTRYPOINT
+
+两种格式：
+</code></pre><ul>
+<li>ENTRYPOINT [“executable”, “param1”, “param2”]</li>
+<li><p>ENTRYPOINT command param1 param2（shell中执行）。</p>
+<p>配置容器启动后执行的命令，并且不可被 docker run 提供的参数覆盖。</p>
+</li>
+</ul>
+<p>每个 Dockerfile 中只能有一个 ENTRYPOINT，当指定多个时，只有最后一个起效</p>
+<pre><code>VOLUME 
+
+格式为 VOLUME [&quot;/data&quot;]。
+</code></pre><p>创建一个可以从本地主机或其他容器挂载的挂载点，一般用来存放数据库和需要保持的数据等。</p>
+<pre><code>USER
+
+格式为 USER daemon。
+
+指定运行容器时的用户名或 UID，后续的 RUN 也会使用指定用户。
+
+当服务不需要管理员权限时，可以通过该命令指定运行用户。并且可以在之前创建所需要的用户，例如：RUN groupadd -r postgres &amp;&amp; useradd -r -g postgres postgres。要临时获取管理员权限可以使用 gosu，而不推荐 sudo。
+
+ WORKDIR
+
+格式为 WORKDIR /path/to/workdir。
+
+为后续的 RUN、CMD、ENTRYPOINT 指令配置工作目录。
+
+可以使用多个 WORKDIR 指令，后续命令如果参数是相对路径，则会基于之前命令指定的路径。例如
+</code></pre><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">WORKDIR /a</span><br><span class="line">WORKDIR b</span><br><span class="line">WORKDIR c</span><br><span class="line">RUN pwd</span><br><span class="line">则最终路径为 /a/b/c。</span><br></pre></td></tr></table></figure>
+<pre><code>ONBUILD
+
+格式为 ONBUILD [INSTRUCTION]。
+
+配置当所创建的镜像作为其它新创建镜像的基础镜像时，所执行的操作指令。
+
+例如，Dockerfile 使用如下的内容创建了镜像 image-A。
+</code></pre><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">[...]</span><br><span class="line">ONBUILD ADD . /app/src</span><br><span class="line">ONBUILD RUN /usr/local/bin/python-build --dir /app/src</span><br><span class="line">[...]</span><br></pre></td></tr></table></figure>
+<pre><code>如果基于 image-A 创建新的镜像时，新的Dockerfile中使用 FROM image-A指定基础镜像时，会自动执行 ONBUILD 指令内容，等价于在后面添加了两条指令。
+</code></pre>  <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">FROM image-A</span><br><span class="line"></span><br><span class="line">#Automatically run the following</span><br><span class="line">ADD . /app/src</span><br><span class="line">RUN /usr/local/bin/python-build --dir /app/src</span><br></pre></td></tr></table></figure>
+<pre><code>使用 ONBUILD 指令的镜像，推荐在标签中注明，例如 ruby:1.9-onbuild。
+
+创建镜像
+
+编写完成 Dockerfile 之后，可以通过 docker build 命令来创建镜像。
+
+基本的格式为 docker build [选项] 路径，该命令将读取指定路径下（包括子目录）的 Dockerfile，并将该路径下所有内容发送给 Docker 服务端，由服务端来创建镜像。因此一般建议放置 Dockerfile 的目录为空目录。也可以通过 .dockerignore 文件（每一行添加一条匹配模式）来让 Docker 忽略路径下的目录和文件。
+
+要指定镜像的标签信息，可以通过 -t 选项，例如
+
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ sudo docker build -t myrepo/myapp /tmp/test1/</span><br></pre></td></tr></table></figure>
+</code></pre>
+        </div>
+        <div class="post-reply">
+            
+            <div class="vcomments"></div>
+
+            <!--Leancloud 操作库:-->
+            <script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
+            <!--Valine 的核心代码库:-->
+            <script src="//unpkg.com/valine/dist/Valine.min.js"></script>
+            <script>
+                new Valine({
+                    el: '.vcomments',
+                    appId: "cUp1F343i6H7veqjhDDOOG7s-gzGzoHsz",
+                    appKey: "cBN1k4HFtguRAnAlQTW4Kcua",
+                    placeholder: 'ヾﾉ≧∀≦)o来啊，快活啊! 评论我',
+                    enable: true,
+                    notify: false,
+                    verify: false,
+                    pageSize: 10
+                })
+            </script>
+            
+
+            
+
+            
+        </div>
+    </div>
+</section>
+<script>
+    // 获取第一张图, 用以当封面背景图
+    var img = document.querySelectorAll('img')[1]
+
+    if (img) {
+        var header_box = document.querySelector('#header_box')
+        header_box.style.backgroundImage = 'url('+ img.src +')'
+    }
+</script>
+
+<!-- for code block highlight --> 
+<!-- theme.block_highlight -->
+<!-- we do not guarantee the char sequences spell right, usr himself do it -->
+<link rel="stylesheet" href="/css/highlight_rainbow.css">
+<script src="/js/highlight.min.js"></script>
+<script type="text/javascript"> hljs.initHighlightingOnLoad();</script>
+
+      </div>
+  </div>
+  <style>
+  #footer {
+    min-height: 10vh;
+    background: black;
+    color: #fff;
+  }
+
+  #footer a {
+    color: #e1e1e1;
+  }
+</style>
+<footer id="footer" class="has-text-centered is-flex center">
+  <div class="container has-padding">
+    <div>
+      <div>
+        Copyright © Liu Run 2019
+        <br>
+        <!--Work Email: run.liu01@hand-china.com-->
+        <br>
+        Thanks for Theme by <a href="http://haojen.github.io/">Haojen Ma</a>
+        <br>
+          Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<script src="/js/search_core.js"></script>
+<script src="/js/script.js"></script>
+
+</body>
+</html>
