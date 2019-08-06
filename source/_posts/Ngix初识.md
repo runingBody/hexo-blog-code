@@ -65,7 +65,7 @@ date: 2019-08-01 14:21:35
 - 
 - 	实际上，Proxy在两种代理中做的事情都是替服务器代为收发请求和响应，不过从结构上看正好左右互换了一下，所以把后出现的那种代理方式称为反向代理了。
 
-	### 2.2 负载均衡
+### 2.2 负载均衡
 
 	Nginx扮演了反向代理服务器的角色，它是以依据什么样的规则进行请求分发的呢？不用的项目应用场景，分发的规则是否可以控制呢？
 
@@ -104,6 +104,250 @@ date: 2019-08-01 14:21:35
 
 
 ## 四、 Nginx配置文件的编写、解析
+	
+### 4.1 如何使用Nginx
+
+	4.1.1 Nginx安装
+
+ 	4.1.2 Nginx配置
+
+	安装完成之后，配置目录 conf 下有以下配置文件，过滤掉了 xx.default 配置：
+
+```
+
+ubuntu: /opt/nginx-1.7.7/conf$ tree |grep -v default
+.
+├── fastcgi.conf
+├── fastcgi_params
+├── koi-utf
+├── koi-win
+├── mime.types
+├── nginx.conf
+├── scgi_params
+├── uwsgi_params
+└── win-utf
+```
+
+	nginx.conf 是主配置文件，默认配置去掉注释之后的内容如下图所示：
+
+```
+
+worker_process      # 表示工作进程的数量，一般设置为cpu的核数
+
+worker_connections  # 表示每个工作进程的最大连接数
+
+server{}            # 块定义了虚拟主机
+
+    listen          # 监听端口
+
+    server_name     # 监听域名
+
+    location {}     # 是用来为匹配的 URI 进行配置，URI 即语法中的“/uri/”
+
+    location /{}    # 匹配任何查询，因为所有请求都以 / 开头
+
+        root        # 指定对应uri的资源查找路径，这里html为相对路径，完整路径为
+                    # /opt/nginx-1.7.7/html/
+
+        index       # 指定首页index文件的名称，可以配置多个，以空格分开。如有多
+                    # 个，按配置顺序查找。
+```
+
+	真实用例,小编自己ng安装路径下的nginx.config配置文件,默认如下:
+
+```
+
+#user  nobody;
+worker_processes  1;
+
+#error_log  logs/error.log;
+#error_log  logs/error.log  notice;
+#error_log  logs/error.log  info;
+
+#pid        logs/nginx.pid;
+
+
+events {
+    worker_connections  1024;
+}
+
+
+http {
+    include       mime.types;
+    default_type  application/octet-stream;
+
+    #log_format  main  '$remote_addr - $remote_user [$time_local] "$request" '
+    #                  '$status $body_bytes_sent "$http_referer" '
+    #                  '"$http_user_agent" "$http_x_forwarded_for"';
+
+    #access_log  logs/access.log  main;
+
+    sendfile        on;
+    #tcp_nopush     on;
+
+    #keepalive_timeout  0;
+    keepalive_timeout  65;
+
+    #gzip  on;
+
+    server {
+        listen       80;
+        server_name  localhost;
+
+        #charset koi8-r;
+
+        #access_log  logs/host.access.log  main;
+
+        location / {
+            root   html;
+            index  index.html index.htm;
+	    
+        }
+
+        #error_page  404              /404.html;
+
+        # redirect server error pages to the static page /50x.html
+        #
+        error_page   500 502 503 504  /50x.html;
+        location = /50x.html {
+            root   html;
+        }
+
+        # proxy the PHP scripts to Apache listening on 127.0.0.1:80
+        #
+	# proxy_pass 后面跟着一个 URL，用来将请求反向代理到 URL 参数指定的服务器上
+        #location ~ \.php$ {
+        #    proxy_pass   http://127.0.0.1;
+        #}
+
+        # pass the PHP scripts to FastCGI server listening on 127.0.0.1:9000
+        #
+        #location ~ \.php$ {
+        #    root           html;
+        #    fastcgi_pass   127.0.0.1:9000;
+        #    fastcgi_index  index.php;
+        #    fastcgi_param  SCRIPT_FILENAME  /scripts$fastcgi_script_name;
+        #    include        fastcgi_params;
+        #}
+
+        # deny access to .htaccess files, if Apache's document root
+        # concurs with nginx's one
+        #
+        #location ~ /\.ht {
+        #    deny  all;
+        #}
+    }
+
+
+    # another virtual host using mix of IP-, name-, and port-based configuration
+    #
+    #server {
+    #    listen       8000;
+    #    listen       somename:8080;
+    #    server_name  somename  alias  another.alias;
+
+    #    location / {
+    #        root   html;
+    #        index  index.html index.htm;
+    #    }
+    #}
+
+
+    # HTTPS server
+    #
+    #server {
+    #    listen       443 ssl;
+    #    server_name  localhost;
+
+    #    ssl_certificate      cert.pem;
+    #    ssl_certificate_key  cert.key;
+
+    #    ssl_session_cache    shared:SSL:1m;
+    #    ssl_session_timeout  5m;
+
+    #    ssl_ciphers  HIGH:!aNULL:!MD5;
+    #    ssl_prefer_server_ciphers  on;
+
+    #    location / {
+    #        root   html;
+    #        index  index.html index.htm;
+    #    }
+    #}
+
+}
+
+```
+
+	从配置可以看出，Nginx 监听了 80 端口、域名为 localhost、根路径为 html 文件夹（我的安装路径为 /opt/nginx-1.7.7，所以 /opt/nginx-1.7.7/html）、默认 index 文件为 index.html，index.htm 服务器错误重定向到 50x.html 页面。
+
+	可以看到 /opt/nginx-1.7.7/html/ 有以下文件：
+
+```language
+
+shuaiqidewuduzaideMacBook-Pro:html runing_liu$ ls -a
+.		..		50x.html	index.html
+shuaiqidewuduzaideMacBook-Pro:html runing_liu$ 
+shuaiqidewuduzaideMacBook-Pro:html runing_liu$ pwd
+/Users/runing_liu/Downloads/install-soft/nginx-1.16.0/html
+```
+
+	这也是上面在浏览器中输入 http://localhost，能够显示欢迎页面的原因。实际上访问的是 ../nginx-1.16.0/html 文件。
+
+### 4.2 location 匹配规则
+
+	语法规则:
+ 
+	location [=|~|~*|^~] /uri/ { … } 
+
+|模式|含义|
+|-|-|-|
+| location = /url   |=表示精确匹配 只有完全匹配才能生效|
+| location ^~ /url  |^~ 开头对URL路径进行前缀匹配 并且在正则之前|
+| llocation ~ pattern   |开头表示区分大小写的正则匹配|
+| location ~* pattern   |开头表示不区分大小写的正则匹配|
+| location /uri   |不带任何修饰符，也表示前缀匹配，但是在正则匹配之后|
+| location /   |通用匹配，任何未匹配到其它location的请求都会匹配到，相当于switch中的default|
+
+	前缀匹配时，Nginx 不对 url 做编码，因此请求为 /static/20%/aa，可以被规则 ^~ /static/ /aa 匹配到（注意是空格）
+
+	多个 location 配置的情况下匹配顺序为（参考资料而来，还未实际验证，试试就知道了，不必拘泥，仅供参考）:
+
+- 	首先精确匹配 =
+- 	其次前缀匹配 ^~
+- 	其次是按文件中顺序的正则匹配
+- 	然后匹配不带任何修饰的前缀匹配。
+- 	最后是交给 / 通用匹配
+- 	当有匹配成功时候，停止匹配，按当前匹配规则处理请求
+
+
+	实际使用中，应该至少有三个匹配规则定义，如下:
+
+```language
+# 直接匹配网站根，通过域名访问网站首页比较频繁，使用这个会加速处理，官网如是说。
+# 这里是直接转发给后端应用服务器了，也可以是一个静态首页
+# 第一个必选规则
+location = / {
+    proxy_pass http://tomcat:8080/index
+}
+
+# 第二个必选规则是处理静态文件请求，这是 nginx 作为 http 服务器的强项
+# 有两种配置模式，目录匹配或后缀匹配，任选其一或搭配使用
+location ^~ /static/ {
+    root /webroot/static/;
+}
+location ~* \.(gif|jpg|jpeg|png|css|js|ico)$ {
+    root /webroot/res/;
+}
+
+# 第三个规则就是通用规则，用来转发动态请求到后端应用服务器
+# 非静态文件请求就默认是动态请求，自己根据实际把握
+# 毕竟目前的一些框架的流行，带.php、.jsp后缀的情况很少了
+location / {
+    proxy_pass http://tomcat:8080/
+}
+# [更多详情=>原文链接地址](https://wiki.jikexueyuan.com/project/openresty/ngx/nginx_local_pcre.html)
+```
+	
 
 	小编正在努力💪ing
 
