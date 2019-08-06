@@ -16,7 +16,7 @@
 <meta property="og:site_name" content="LiuRun&#39;s Blog">
 <meta property="og:description" content="一、 什么是Nginx二、 Nginx的功能 作为一个HTTP服务器进行网站的发布处理 高性能的HTTP服务器和反向代理服务器 IMAP、POP3、SMTP代理服务器邮件代理服务器 作为反向代理进行负载均衡 2.1 Http和反向代理功能2.1.1 了解代理概念 所谓代理就是一个代表、一个通道.在说反向代理之前，我们先看看正向代理，正向代理也是大家最常接触的到的代理模式，我们会从两个方面来说关于正">
 <meta property="og:locale" content="default">
-<meta property="og:updated_time" content="2019-08-01T07:43:39.000Z">
+<meta property="og:updated_time" content="2019-08-06T08:03:06.647Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Ngix初识">
 <meta name="twitter:description" content="一、 什么是Nginx二、 Nginx的功能 作为一个HTTP服务器进行网站的发布处理 高性能的HTTP服务器和反向代理服务器 IMAP、POP3、SMTP代理服务器邮件代理服务器 作为反向代理进行负载均衡 2.1 Http和反向代理功能2.1.1 了解代理概念 所谓代理就是一个代表、一个通道.在说反向代理之前，我们先看看正向代理，正向代理也是大家最常接触的到的代理模式，我们会从两个方面来说关于正">
@@ -186,15 +186,19 @@
 <li></li>
 <li>在反向代理中，Proxy和Server同属于一个LAN（图中方框内），隐藏了服务端信息；</li>
 <li></li>
-<li><p>实际上，Proxy在两种代理中做的事情都是替服务器代为收发请求和响应，不过从结构上看正好左右互换了一下，所以把后出现的那种代理方式称为反向代理了。</p>
-<h3 id="2-2-负载均衡"><a href="#2-2-负载均衡" class="headerlink" title="2.2 负载均衡"></a>2.2 负载均衡</h3><p>Nginx扮演了反向代理服务器的角色，它是以依据什么样的规则进行请求分发的呢？不用的项目应用场景，分发的规则是否可以控制呢？</p>
-<p>这里提到的客户端发送的、Nginx反向代理服务器接收到的请求数量，就是我们说的负载量。</p>
-<p>请求数量按照一定的规则进行分发到不同的服务器处理的规则，就是一种均衡规则(又称负载均衡策略)。</p>
-<p>所以~将服务器接收到的请求按照规则分发的过程，称为负载均衡。</p>
-<p>负载方式:</p>
-</li>
-<li><p>硬件负载(例如F5负载策略)</p>
-</li>
+<li>实际上，Proxy在两种代理中做的事情都是替服务器代为收发请求和响应，不过从结构上看正好左右互换了一下，所以把后出现的那种代理方式称为反向代理了。</li>
+</ul>
+<h3 id="2-2-负载均衡"><a href="#2-2-负载均衡" class="headerlink" title="2.2 负载均衡"></a>2.2 负载均衡</h3><pre><code>Nginx扮演了反向代理服务器的角色，它是以依据什么样的规则进行请求分发的呢？不用的项目应用场景，分发的规则是否可以控制呢？
+
+这里提到的客户端发送的、Nginx反向代理服务器接收到的请求数量，就是我们说的负载量。
+
+请求数量按照一定的规则进行分发到不同的服务器处理的规则，就是一种均衡规则(又称负载均衡策略)。
+
+所以~将服务器接收到的请求按照规则分发的过程，称为负载均衡。
+
+负载方式:
+</code></pre><ul>
+<li>硬件负载(例如F5负载策略)</li>
 <li><p>软件负载(软件层的消息队列分发机制)</p>
 <p>Nginx支持的负载均衡调度算法方式如下：</p>
 </li>
@@ -260,7 +264,72 @@
 </tr>
 </tbody>
 </table>
-<h2 id="四、-Nginx配置文件的编写、解析"><a href="#四、-Nginx配置文件的编写、解析" class="headerlink" title="四、 Nginx配置文件的编写、解析"></a>四、 Nginx配置文件的编写、解析</h2><pre><code>小编正在努力💪ing
+<h2 id="四、-Nginx配置文件的编写、解析"><a href="#四、-Nginx配置文件的编写、解析" class="headerlink" title="四、 Nginx配置文件的编写、解析"></a>四、 Nginx配置文件的编写、解析</h2><h3 id="4-1-如何使用Nginx"><a href="#4-1-如何使用Nginx" class="headerlink" title="4.1 如何使用Nginx"></a>4.1 如何使用Nginx</h3><pre><code>4.1.1 Nginx安装
+
+ 4.1.2 Nginx配置
+
+安装完成之后，配置目录 conf 下有以下配置文件，过滤掉了 xx.default 配置：
+</code></pre><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">ubuntu: /opt/nginx-1.7.7/conf$ tree |grep -v default</span><br><span class="line">.</span><br><span class="line">├── fastcgi.conf</span><br><span class="line">├── fastcgi_params</span><br><span class="line">├── koi-utf</span><br><span class="line">├── koi-win</span><br><span class="line">├── mime.types</span><br><span class="line">├── nginx.conf</span><br><span class="line">├── scgi_params</span><br><span class="line">├── uwsgi_params</span><br><span class="line">└── win-utf</span><br></pre></td></tr></table></figure>
+<pre><code>nginx.conf 是主配置文件，默认配置去掉注释之后的内容如下图所示：
+</code></pre><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">worker_process      # 表示工作进程的数量，一般设置为cpu的核数</span><br><span class="line"></span><br><span class="line">worker_connections  # 表示每个工作进程的最大连接数</span><br><span class="line"></span><br><span class="line">server&#123;&#125;            # 块定义了虚拟主机</span><br><span class="line"></span><br><span class="line">    listen          # 监听端口</span><br><span class="line"></span><br><span class="line">    server_name     # 监听域名</span><br><span class="line"></span><br><span class="line">    location &#123;&#125;     # 是用来为匹配的 URI 进行配置，URI 即语法中的“/uri/”</span><br><span class="line"></span><br><span class="line">    location /&#123;&#125;    # 匹配任何查询，因为所有请求都以 / 开头</span><br><span class="line"></span><br><span class="line">        root        # 指定对应uri的资源查找路径，这里html为相对路径，完整路径为</span><br><span class="line">                    # /opt/nginx-1.7.7/html/</span><br><span class="line"></span><br><span class="line">        index       # 指定首页index文件的名称，可以配置多个，以空格分开。如有多</span><br><span class="line">                    # 个，按配置顺序查找。</span><br></pre></td></tr></table></figure>
+<pre><code>真实用例,小编自己ng安装路径下的nginx.config配置文件,默认如下:
+</code></pre><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">#user  nobody;</span><br><span class="line">worker_processes  1;</span><br><span class="line"></span><br><span class="line">#error_log  logs/error.log;</span><br><span class="line">#error_log  logs/error.log  notice;</span><br><span class="line">#error_log  logs/error.log  info;</span><br><span class="line"></span><br><span class="line">#pid        logs/nginx.pid;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">events &#123;</span><br><span class="line">    worker_connections  1024;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">http &#123;</span><br><span class="line">    include       mime.types;</span><br><span class="line">    default_type  application/octet-stream;</span><br><span class="line"></span><br><span class="line">    #log_format  main  &apos;$remote_addr - $remote_user [$time_local] &quot;$request&quot; &apos;</span><br><span class="line">    #                  &apos;$status $body_bytes_sent &quot;$http_referer&quot; &apos;</span><br><span class="line">    #                  &apos;&quot;$http_user_agent&quot; &quot;$http_x_forwarded_for&quot;&apos;;</span><br><span class="line"></span><br><span class="line">    #access_log  logs/access.log  main;</span><br><span class="line"></span><br><span class="line">    sendfile        on;</span><br><span class="line">    #tcp_nopush     on;</span><br><span class="line"></span><br><span class="line">    #keepalive_timeout  0;</span><br><span class="line">    keepalive_timeout  65;</span><br><span class="line"></span><br><span class="line">    #gzip  on;</span><br><span class="line"></span><br><span class="line">    server &#123;</span><br><span class="line">        listen       80;</span><br><span class="line">        server_name  localhost;</span><br><span class="line"></span><br><span class="line">        #charset koi8-r;</span><br><span class="line"></span><br><span class="line">        #access_log  logs/host.access.log  main;</span><br><span class="line"></span><br><span class="line">        location / &#123;</span><br><span class="line">            root   html;</span><br><span class="line">            index  index.html index.htm;</span><br><span class="line">	    </span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        #error_page  404              /404.html;</span><br><span class="line"></span><br><span class="line">        # redirect server error pages to the static page /50x.html</span><br><span class="line">        #</span><br><span class="line">        error_page   500 502 503 504  /50x.html;</span><br><span class="line">        location = /50x.html &#123;</span><br><span class="line">            root   html;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        # proxy the PHP scripts to Apache listening on 127.0.0.1:80</span><br><span class="line">        #</span><br><span class="line">	# proxy_pass 后面跟着一个 URL，用来将请求反向代理到 URL 参数指定的服务器上</span><br><span class="line">        #location ~ \.php$ &#123;</span><br><span class="line">        #    proxy_pass   http://127.0.0.1;</span><br><span class="line">        #&#125;</span><br><span class="line"></span><br><span class="line">        # pass the PHP scripts to FastCGI server listening on 127.0.0.1:9000</span><br><span class="line">        #</span><br><span class="line">        #location ~ \.php$ &#123;</span><br><span class="line">        #    root           html;</span><br><span class="line">        #    fastcgi_pass   127.0.0.1:9000;</span><br><span class="line">        #    fastcgi_index  index.php;</span><br><span class="line">        #    fastcgi_param  SCRIPT_FILENAME  /scripts$fastcgi_script_name;</span><br><span class="line">        #    include        fastcgi_params;</span><br><span class="line">        #&#125;</span><br><span class="line"></span><br><span class="line">        # deny access to .htaccess files, if Apache&apos;s document root</span><br><span class="line">        # concurs with nginx&apos;s one</span><br><span class="line">        #</span><br><span class="line">        #location ~ /\.ht &#123;</span><br><span class="line">        #    deny  all;</span><br><span class="line">        #&#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    # another virtual host using mix of IP-, name-, and port-based configuration</span><br><span class="line">    #</span><br><span class="line">    #server &#123;</span><br><span class="line">    #    listen       8000;</span><br><span class="line">    #    listen       somename:8080;</span><br><span class="line">    #    server_name  somename  alias  another.alias;</span><br><span class="line"></span><br><span class="line">    #    location / &#123;</span><br><span class="line">    #        root   html;</span><br><span class="line">    #        index  index.html index.htm;</span><br><span class="line">    #    &#125;</span><br><span class="line">    #&#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    # HTTPS server</span><br><span class="line">    #</span><br><span class="line">    #server &#123;</span><br><span class="line">    #    listen       443 ssl;</span><br><span class="line">    #    server_name  localhost;</span><br><span class="line"></span><br><span class="line">    #    ssl_certificate      cert.pem;</span><br><span class="line">    #    ssl_certificate_key  cert.key;</span><br><span class="line"></span><br><span class="line">    #    ssl_session_cache    shared:SSL:1m;</span><br><span class="line">    #    ssl_session_timeout  5m;</span><br><span class="line"></span><br><span class="line">    #    ssl_ciphers  HIGH:!aNULL:!MD5;</span><br><span class="line">    #    ssl_prefer_server_ciphers  on;</span><br><span class="line"></span><br><span class="line">    #    location / &#123;</span><br><span class="line">    #        root   html;</span><br><span class="line">    #        index  index.html index.htm;</span><br><span class="line">    #    &#125;</span><br><span class="line">    #&#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<pre><code>从配置可以看出，Nginx 监听了 80 端口、域名为 localhost、根路径为 html 文件夹（我的安装路径为 /opt/nginx-1.7.7，所以 /opt/nginx-1.7.7/html）、默认 index 文件为 index.html，index.htm 服务器错误重定向到 50x.html 页面。
+
+可以看到 /opt/nginx-1.7.7/html/ 有以下文件：
+</code></pre><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">shuaiqidewuduzaideMacBook-Pro:html runing_liu$ ls -a</span><br><span class="line">.		..		50x.html	index.html</span><br><span class="line">shuaiqidewuduzaideMacBook-Pro:html runing_liu$ </span><br><span class="line">shuaiqidewuduzaideMacBook-Pro:html runing_liu$ pwd</span><br><span class="line">/Users/runing_liu/Downloads/install-soft/nginx-1.16.0/html</span><br></pre></td></tr></table></figure>
+<pre><code>这也是上面在浏览器中输入 http://localhost，能够显示欢迎页面的原因。实际上访问的是 ../nginx-1.16.0/html 文件。
+</code></pre><h3 id="4-2-location-匹配规则"><a href="#4-2-location-匹配规则" class="headerlink" title="4.2 location 匹配规则"></a>4.2 location 匹配规则</h3><pre><code>语法规则:
+
+location [=|~|~*|^~] /uri/ { … } 
+</code></pre><table>
+<thead>
+<tr>
+<th>模式</th>
+<th>含义</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>location = /url</td>
+<td>=表示精确匹配 只有完全匹配才能生效</td>
+</tr>
+<tr>
+<td>location ^~ /url</td>
+<td>^~ 开头对URL路径进行前缀匹配 并且在正则之前</td>
+</tr>
+<tr>
+<td>llocation ~ pattern</td>
+<td>开头表示区分大小写的正则匹配</td>
+</tr>
+<tr>
+<td>location ~* pattern</td>
+<td>开头表示不区分大小写的正则匹配</td>
+</tr>
+<tr>
+<td>location /uri</td>
+<td>不带任何修饰符，也表示前缀匹配，但是在正则匹配之后</td>
+</tr>
+<tr>
+<td>location /</td>
+<td>通用匹配，任何未匹配到其它location的请求都会匹配到，相当于switch中的default</td>
+</tr>
+</tbody>
+</table>
+<pre><code>前缀匹配时，Nginx 不对 url 做编码，因此请求为 /static/20%/aa，可以被规则 ^~ /static/ /aa 匹配到（注意是空格）
+
+多个 location 配置的情况下匹配顺序为（参考资料而来，还未实际验证，试试就知道了，不必拘泥，仅供参考）:
+</code></pre><ul>
+<li>首先精确匹配 =</li>
+<li>其次前缀匹配 ^~</li>
+<li>其次是按文件中顺序的正则匹配</li>
+<li>然后匹配不带任何修饰的前缀匹配。</li>
+<li>最后是交给 / 通用匹配</li>
+<li>当有匹配成功时候，停止匹配，按当前匹配规则处理请求</li>
+</ul>
+<pre><code>实际使用中，应该至少有三个匹配规则定义，如下:
+</code></pre><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"># 直接匹配网站根，通过域名访问网站首页比较频繁，使用这个会加速处理，官网如是说。</span><br><span class="line"># 这里是直接转发给后端应用服务器了，也可以是一个静态首页</span><br><span class="line"># 第一个必选规则</span><br><span class="line">location = / &#123;</span><br><span class="line">    proxy_pass http://tomcat:8080/index</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"># 第二个必选规则是处理静态文件请求，这是 nginx 作为 http 服务器的强项</span><br><span class="line"># 有两种配置模式，目录匹配或后缀匹配，任选其一或搭配使用</span><br><span class="line">location ^~ /static/ &#123;</span><br><span class="line">    root /webroot/static/;</span><br><span class="line">&#125;</span><br><span class="line">location ~* \.(gif|jpg|jpeg|png|css|js|ico)$ &#123;</span><br><span class="line">    root /webroot/res/;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"># 第三个规则就是通用规则，用来转发动态请求到后端应用服务器</span><br><span class="line"># 非静态文件请求就默认是动态请求，自己根据实际把握</span><br><span class="line"># 毕竟目前的一些框架的流行，带.php、.jsp后缀的情况很少了</span><br><span class="line">location / &#123;</span><br><span class="line">    proxy_pass http://tomcat:8080/</span><br><span class="line">&#125;</span><br><span class="line"># [更多详情=&gt;原文链接地址](https://wiki.jikexueyuan.com/project/openresty/ngx/nginx_local_pcre.html)</span><br></pre></td></tr></table></figure>
+<pre><code>小编正在努力💪ing
 </code></pre><p>《本站相关链接》:<a href="https://www.cnblogs.com/wcwnina/p/8728391.html" target="_blank" rel="noopener">(Nginx相关介绍(Nginx是什么?能干嘛?))</a></p>
 
         </div>
